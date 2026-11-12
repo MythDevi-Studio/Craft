@@ -5,7 +5,7 @@
 //! a real parser — it uses simple pattern matching — but it's fast and good
 //! enough for display purposes.
 
-use crate::editor::Language;
+use crate::editor::document::Language;
 
 use super::{Token, TokenType};
 
@@ -77,7 +77,7 @@ impl Highlighter {
         ];
         let macros = ["println!", "eprintln!", "dbg!", "format!", "vec!", "todo!", "unimplemented!", "panic!"];
 
-        self.tokenize_generic(line, &keywords, control, types, macros, "//", "/*", "*/", true)
+        self.tokenize_generic(line, &keywords, &control, &types, &macros, "//", "/*", "*/", true)
     }
 
     // ── JavaScript / TypeScript ─────────────────────────────────────────
@@ -97,7 +97,7 @@ impl Highlighter {
             "Array", "Map", "Set", "Promise", "Date", "RegExp", "Error",
         ];
 
-        self.tokenize_generic(line, &keywords, control, &types, &[], "//", "/*", "*/", true)
+        self.tokenize_generic(line, &keywords, &control, &types, &[], "//", "/*", "*/", true)
     }
 
     // ── Python ────────────────────────────────────────────────────────
@@ -112,7 +112,7 @@ impl Highlighter {
         let control = ["break", "continue", "else", "for", "if", "pass", "raise", "return", "try", "while", "yield"];
         let types = ["int", "float", "str", "bool", "list", "dict", "tuple", "set", "bytes", "object", "type"];
 
-        self.tokenize_generic(line, &keywords, control, &types, &[], "#", "\"\"\"", "\"\"\"", false)
+        self.tokenize_generic(line, &keywords, &control, &types, &[], "#", "\"\"\"", "\"\"\"", false)
     }
 
     // ── JSON ──────────────────────────────────────────────────────────

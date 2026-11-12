@@ -119,10 +119,6 @@ impl<T: Lerp + Clone> Anim<T> {
     /// Animate from the current value to a new target over `duration` seconds.
     pub fn animate_to(&mut self, target: T, duration: f32) {
         let current = self.value();
-        if current == target {
-            self.jump_to(target);
-            return;
-        }
         self.from = current;
         self.to = target;
         self.state = AnimState::Running {

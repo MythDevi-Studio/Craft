@@ -124,7 +124,7 @@ impl Theme {
 
             accent: Color::rgb(97, 175, 239),
             accent_hover: Color::rgb(115, 190, 252),
-            accent_dim: Color::rgb(97, 175, 239, 40),
+            accent_dim: Color::rgba(97, 175, 239, 40),
 
             border: Color::rgb(45, 47, 55),
             border_subtle: Color::rgb(38, 40, 47),
@@ -132,7 +132,7 @@ impl Theme {
             selection_bg: Color::rgb(44, 48, 59),
             selection_bg_focus: Color::rgb(43, 71, 108),
             cursor: Color::rgb(208, 213, 223),
-            line_highlight: Color::rgb(255, 255, 255, 5),
+            line_highlight: Color::rgba(255, 255, 255, 5),
             line_number: Color::rgb(85, 91, 105),
             line_number_active: Color::rgb(160, 166, 180),
             gutter_bg: Color::rgb(24, 25, 31),
@@ -188,7 +188,7 @@ impl Theme {
 
             accent: Color::rgb(48, 123, 199),
             accent_hover: Color::rgb(65, 138, 212),
-            accent_dim: Color::rgb(48, 123, 199, 30),
+            accent_dim: Color::rgba(48, 123, 199, 30),
 
             border: Color::rgb(220, 222, 225),
             border_subtle: Color::rgb(230, 232, 235),
@@ -196,7 +196,7 @@ impl Theme {
             selection_bg: Color::rgb(220, 230, 245),
             selection_bg_focus: Color::rgb(180, 210, 240),
             cursor: Color::rgb(56, 58, 66),
-            line_highlight: Color::rgb(0, 0, 0, 4),
+            line_highlight: Color::rgba(0, 0, 0, 4),
             line_number: Color::rgb(160, 165, 175),
             line_number_active: Color::rgb(80, 85, 95),
             gutter_bg: Color::rgb(248, 248, 250),

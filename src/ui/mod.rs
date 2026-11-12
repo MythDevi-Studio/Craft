@@ -16,6 +16,6 @@ pub mod widgets;
 pub use animation::{Anim, AnimState, AnimationManager};
 pub use context::UiContext;
 pub use input::InputState;
-pub use painter::Fonts;
+pub use painter::{DrawCtx, Fonts};
 pub use theme::Theme;
 pub use widget::{EventResult, Widget};

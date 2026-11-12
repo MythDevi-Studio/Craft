@@ -4,7 +4,7 @@
 //! anchor is set, the text between the anchor and the cursor position is
 //! selected. Both are `Position` values (line, column).
 
-use super::Position;
+use crate::editor::buffer::Position;
 
 /// A cursor with optional selection.
 ///

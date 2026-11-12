@@ -6,7 +6,9 @@
 
 use std::path::PathBuf;
 
-use super::{Buffer, Cursor, Position};
+use super::{Buffer, Cursor};
+use crate::editor::buffer::Position;
+use crate::editor::history::{EditRecord, History};
 
 /// Supported programming languages for syntax highlighting.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -89,6 +91,8 @@ pub struct Document {
     pub scroll_y: f32,
     /// Horizontal scroll position (in pixels).
     pub scroll_x: f32,
+    /// Undo/redo history.
+    pub history: History,
 }
 
 impl Document {
@@ -102,6 +106,7 @@ impl Document {
             dirty: false,
             scroll_y: 0.0,
             scroll_x: 0.0,
+            history: History::new(),
         }
     }
 
@@ -115,6 +120,7 @@ impl Document {
             dirty: false,
             scroll_y: 0.0,
             scroll_x: 0.0,
+            history: History::new(),
         }
     }
 
@@ -130,24 +136,28 @@ impl Document {
             dirty: false,
             scroll_y: 0.0,
             scroll_x: 0.0,
+            history: History::new(),
         })
     }
 
     /// Insert text at the cursor position and advance the cursor.
     pub fn insert_text(&mut self, text: &str) {
+        let before = self.cursor.position;
         if let Some((start, end)) = self.cursor.selection_range() {
-            // Replace selection
             let offset_start = self.buffer.position_to_offset(start);
             let offset_end = self.buffer.position_to_offset(end);
+            let deleted = self.buffer.slice(offset_start, offset_end);
             self.buffer.replace(offset_start, offset_end, text);
             let new_pos = self.buffer.offset_to_position(offset_start + text.chars().count());
             self.cursor.position = new_pos;
             self.cursor.clear_selection();
+            self.history.push(EditRecord::replace(offset_start, deleted, text.to_string(), before, new_pos));
         } else {
             let offset = self.buffer.position_to_offset(self.cursor.position);
             self.buffer.insert(offset, text);
             let new_pos = self.buffer.offset_to_position(offset + text.chars().count());
             self.cursor.position = new_pos;
+            self.history.push(EditRecord::insert(offset, text.to_string(), before, new_pos));
         }
         self.dirty = true;
     }
@@ -225,12 +235,61 @@ impl Document {
 
     /// Delete a range of text and move the cursor to the start of the range.
     pub fn delete_range(&mut self, start: Position, end: Position) {
+        let before = self.cursor.position;
         let offset_start = self.buffer.position_to_offset(start);
         let offset_end = self.buffer.position_to_offset(end);
+        let deleted = self.buffer.slice(offset_start, offset_end);
         self.buffer.remove(offset_start, offset_end);
         self.cursor.position = start;
         self.cursor.clear_selection();
+        if !deleted.is_empty() {
+            self.history.push(EditRecord::delete(offset_start, deleted, before, start));
+        }
         self.dirty = true;
+    }
+
+    /// Undo the last change.
+    pub fn undo(&mut self) {
+        self.history.auto_commit();
+        if let Some(tx) = self.history.pop_undo() {
+            // Apply records in reverse order
+            for record in tx.records.iter().rev() {
+                if !record.inserted.is_empty() {
+                    // Reverse an insert: delete the inserted text
+                    self.buffer.remove(
+                        record.offset,
+                        record.offset + record.inserted.chars().count(),
+                    );
+                }
+                if !record.deleted.is_empty() {
+                    // Reverse a delete: re-insert the deleted text
+                    self.buffer.insert(record.offset, &record.deleted);
+                }
+                self.cursor.position = record.cursor_before;
+                self.cursor.anchor = None;
+            }
+            self.dirty = true;
+        }
+    }
+
+    /// Redo the last undone change.
+    pub fn redo(&mut self) {
+        if let Some(tx) = self.history.pop_redo() {
+            for record in &tx.records {
+                if !record.deleted.is_empty() {
+                    self.buffer.remove(
+                        record.offset,
+                        record.offset + record.deleted.chars().count(),
+                    );
+                }
+                if !record.inserted.is_empty() {
+                    self.buffer.insert(record.offset, &record.inserted);
+                }
+                self.cursor.position = record.cursor_after;
+                self.cursor.anchor = None;
+            }
+            self.dirty = true;
+        }
     }
 
     /// Delete the word before the cursor.

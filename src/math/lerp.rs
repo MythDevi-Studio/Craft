@@ -36,7 +36,7 @@ impl Lerp for usize {
     }
 }
 
-impl<T: Lerp> Lerp for Option<T> {
+impl<T: Lerp + Clone + PartialEq> Lerp for Option<T> {
     fn lerp(&self, other: &Self, t: f32) -> Self {
         match (self, other) {
             (Some(a), Some(b)) => Some(a.lerp(b, t)),

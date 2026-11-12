@@ -8,7 +8,13 @@
 pub mod buffer;
 pub mod cursor;
 pub mod document;
+pub mod history;
+pub mod multicursor;
+pub mod search;
 
-pub use buffer::Buffer;
-pub use cursor::{Cursor, Position, Selection};
-pub use document::Document;
+pub use buffer::{Buffer, Position};
+pub use cursor::{Cursor, Selection};
+pub use document::{Document, Language};
+pub use history::{EditRecord, History, Transaction};
+pub use multicursor::MultiCursor;
+pub use search::{Match as SearchMatch, SearchOptions, SearchState};
