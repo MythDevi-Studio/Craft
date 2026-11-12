@@ -1,0 +1,25 @@
+[package]
+name = "moce"
+version = "0.1.0"
+edition = "2024"
+description = "Moce - A modern code editor built with Rust and Skia"
+authors = ["Moce Contributors"]
+
+[dependencies]
+skia-safe = "0.83"
+winit = { version = "0.30", features = ["rwh_06"] }
+softbuffer = "0.4"
+ropey = "1.6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "process", "io-util", "sync", "time"] }
+log = "0.4"
+env_logger = "0.11"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+
+[profile.dev]
+opt-level = 1
